@@ -14,18 +14,18 @@
     }                                                                          \
   } while (0)
 
-// 定义常量：复数单元数量
+// 每个样本元素的数量
 constexpr int NUM_ELEMENTS = 112;
 constexpr int THREADS_PER_BLOCK = 128;
-constexpr int MAX_BATCH_SIZE = 8;  // 一次处理的批次大小
+// constexpr int MAX_BATCH_SIZE = 8;  
 
 // 合并计算均值和去均值的函数
 __global__ void computeMeanAndSubtract(cuFloatComplex* data, int num_samples, cuFloatComplex* means);
 
-// 每个线程块计算一个样本的协方差矩阵
+// 计算协方差，输出值以行优先的方式存储的一维数组中  112*112*样本数
 __global__ void sampleCovariance(cuFloatComplex* data, int num_samples, cuFloatComplex* covariance_matrices);
 
-// 主计算函数
+// 包含上述两个核函数，用于调用的函数 data和covariance_matrices分别是输入数据和输出数据（存储在显存中），num_samples是样本数
 void computeComplexCovariance(cuFloatComplex* data, int num_samples, cuFloatComplex* covariance_matrices);
 
-#endif // COMPLEX_COVARIANCE_CUH 
+#endif 

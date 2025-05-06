@@ -43,7 +43,7 @@ __global__ void computeMeanAndSubtract(cuFloatComplex *data, int num_samples,
 
   __syncthreads();
 
-  // 第二步：去均值化
+  // 第二步：去均值化  将每个样本的每个元素减去均值
   for (int sample = blockIdx.x; sample < num_samples; sample += gridDim.x) {
     if (element_id < NUM_ELEMENTS) {
       int idx = sample * NUM_ELEMENTS + element_id;
@@ -76,7 +76,7 @@ __global__ void sampleCovariance(cuFloatComplex *data, int num_samples,
         int col = tid;
         cuFloatComplex col_val = shared_elements[col];
 
-        // 计算row行，col列的协方差值
+        // 计算row行，col列元素的协方差值
         cuFloatComplex cov = complexMultiplyConjB(row_val, col_val);
 
         covariance_matrices[sample_idx * NUM_ELEMENTS * NUM_ELEMENTS +
@@ -90,7 +90,6 @@ __global__ void sampleCovariance(cuFloatComplex *data, int num_samples,
 
 void computeComplexCovariance(cuFloatComplex *d_data, int num_samples,
                               cuFloatComplex *d_covariance_matrices) {
-  // 分配设备内存
   cuFloatComplex *d_means;
   size_t means_size = NUM_ELEMENTS * sizeof(cuFloatComplex);
   CHECK_CUDA_ERROR(cudaMalloc((void **)&d_means, means_size));
